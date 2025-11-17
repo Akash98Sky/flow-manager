@@ -11,12 +11,17 @@ class Process:
         self.task = task
 
     async def execute(self):
-        print(f"Executing task: {self.task.name}")
-        # simulate some processing delay
-        await asyncio.sleep(1)
-        print(f"Executed task: {self.task.name}")
-        # Simulate task execution success
-        return True
+        try:
+            print(f"Executing task: {self.task.name}")
+            # simulate some processing delay
+            await asyncio.sleep(1)
+            print(f"Executed task: {self.task.name}")
+            # Simulate task execution success (true)
+            return True
+        except Exception as e:
+            print(f"Error executing task {self.task.name}: {e}")
+            # Simulate task execution failure (false)
+            return False
 
 class Scheduler:
     history: list[Task]
