@@ -22,7 +22,11 @@ class Flow(BaseModel):
 class FlowData(BaseModel):
     flow: Flow
 
+class Execution(Task):
+    success: bool
+    duration: float
+
 class FlowExecutionResult(BaseModel):
     flow_id: str
     status: str
-    executions: list[Task]
+    executions: list[Execution]
