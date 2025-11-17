@@ -18,3 +18,11 @@ class Flow(BaseModel):
     start_task: str
     tasks: list[Task]
     conditions: list[Condition]
+
+class FlowData(BaseModel):
+    flow: Flow
+
+class FlowExecutionResult(BaseModel):
+    flow_id: str
+    status: str
+    executions: list[Task]
