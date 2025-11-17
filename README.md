@@ -2,6 +2,29 @@
 
 This project provides a system for defining and executing sequential workflows (flows). Flows are composed of tasks, and their execution path is determined by conditions based on task success or failure.
 
+## Flow Manager Implementation Diagram
+
+This diagram provides a simplified view of the flow manager's core components and their interactions.
+
+```mermaid
+graph TD
+    A[API Request] --> B(main.py);
+    B --> C{FlowProcessor};
+    C -- Schedules Next Task --> D[Scheduler];
+    D -- Executes --> E[Tasks/Processes];
+    E -- Task Outcome --> C;
+    C -- Evaluates Conditions --> F[Flow Definition];
+    F -- Determines Next Task --> C;
+    C -- Ends Flow --> G[Flow Result];
+
+    subgraph Core Components
+        C
+        D
+        E
+        F
+    end
+```
+
 ## Flow Design
 
 ### Task Dependencies
