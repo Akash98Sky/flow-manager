@@ -79,7 +79,7 @@ Flows are defined in JSON files within the `flows/` directory.
         ],
         "conditions": [
             {
-                "name": "condition_a_success",
+                "name": "condition_a",
                 "description": "If task_a succeeds, go to task_b",
                 "source_task": "task_a",
                 "outcome": "success",
@@ -87,15 +87,7 @@ Flows are defined in JSON files within the `flows/` directory.
                 "target_task_failure": "task_c"
             },
             {
-                "name": "condition_a_failure",
-                "description": "If task_a fails, go to task_c",
-                "source_task": "task_a",
-                "outcome": "failure",
-                "target_task_success": "task_b",
-                "target_task_failure": "task_c"
-            },
-            {
-                "name": "condition_b_success",
+                "name": "condition_b",
                 "description": "If task_b succeeds, go to task_c",
                 "source_task": "task_b",
                 "outcome": "success",
@@ -103,7 +95,7 @@ Flows are defined in JSON files within the `flows/` directory.
                 "target_task_failure": "end"
             },
             {
-                "name": "condition_c_success",
+                "name": "condition_c",
                 "description": "If task_c succeeds, go to end",
                 "source_task": "task_c",
                 "outcome": "success",
@@ -113,3 +105,39 @@ Flows are defined in JSON files within the `flows/` directory.
         ]
     }
 }
+```
+
+## Getting Started
+
+This section guides you through setting up and running the Flow Manager project.
+
+### Prerequisites
+
+*   **Git**: Ensure Git is installed on your system.
+*   **Python**: Ensure Python is installed.
+*   **uv**: `uv` is a fast Python package installer and Python version manager. If you don't have it installed, you can install it following the installation [link](https://docs.astral.sh/uv/getting-started/installation/).
+
+### Project Setup
+
+1.  **Clone the Repository**:
+    Clone the project repository to your local machine.
+    ```bash
+    # If the repository is not yet cloned
+    git clone https://github.com/Akash98Sky/flow-manager.git
+    cd flow-manager
+    ```
+
+2.  **Install Project Dependencies**:
+    Use `uv` to install the project's dependencies. This command reads the `pyproject.toml` and `uv.lock` files to ensure all necessary packages are installed.
+    ```bash
+    uv sync
+    ```
+
+### Running the Application
+
+Once the dependencies are installed, you can run the FastAPI application:
+
+```bash
+# Run the FastAPI application using uv
+uv run fastapi dev
+```
