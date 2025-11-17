@@ -1,54 +1,36 @@
 # Flow Manager
 
-This project implements a flow manager that allows defining and executing complex workflows. Flows are composed of tasks, and their execution is controlled by conditions that dictate the sequence based on task success or failure.
+This project provides a system for defining and executing sequential workflows (flows). Flows are composed of tasks, and their execution path is determined by conditions based on task success or failure.
 
-## Flow Design Explanation
-
-The flow manager orchestrates a series of tasks, enabling sophisticated workflow automation.
+## Flow Design
 
 ### Task Dependencies
-
-Tasks are linked together through a defined set of `conditions`. Each `condition` specifies:
-- A `source_task`: The task whose completion triggers the evaluation of this condition.
-- An `outcome`: The result of the `source_task` (e.g., 'success', 'failure').
-- A `target_task_success`: The next task to execute if the `source_task` succeeds and the `outcome` matches.
-- A `target_task_failure`: The next task to execute if the `source_task` fails and the `outcome` matches.
-
-The `Flow` object defines the `start_task` and lists all available `tasks` and `conditions`. The `FlowProcessor` uses these definitions to determine the execution path. If a task completes and no matching condition is found for its outcome, the flow is considered ended.
+Tasks are linked using `conditions`. Each condition specifies a `source_task`, its `outcome` (success/failure), and the `target_task_success` or `target_task_failure` to execute next. The `Flow` object defines the starting task and all available tasks and conditions.
 
 ### Task Success/Failure Evaluation
-
-1.  **Individual Task Execution**: The `Process` class (within `app/services/task.py`) is responsible for executing a single task. Currently, task execution is simulated with a delay, and the `Process.execute()` method is designed to return a boolean indicating success (`True`) or failure (`False`). The actual logic for determining the success or failure of a task's operation would be implemented within this method.
-2.  **Flow Progression Evaluation**: The `FlowProcessor` (within `app/services/flow.py`) evaluates the flow's progression. After a task completes, the `FlowProcessor` iterates through the defined `conditions` in the `Flow` object. It checks if any `condition`'s `source_task` matches the completed task and if the `outcome` specified in the `condition` aligns with the actual result of the task (success or failure).
+-   **Task Execution**: The `Process` class in `app/services/task.py` executes individual tasks and returns a success/failure status.
+-   **Flow Progression**: The `FlowProcessor` in `app/services/flow.py` uses the task's outcome to find a matching `condition` and schedules the appropriate next task.
 
 ### Task Outcome Handling
-
--   **Task Success**: If a task succeeds, the `FlowProcessor` looks for a `condition` where the `source_task` matches the completed task and the `outcome` is 'success'. If found, the `target_task_success` is scheduled for execution. If no such condition is found, the flow is terminated.
--   **Task Failure**: If a task fails, the `FlowProcessor` looks for a `condition` where the `source_task` matches the completed task and the `outcome` is 'failure'. If found, the `target_task_failure` is scheduled for execution. If no such condition is found, the flow is terminated.
--   **Flow Termination**: A flow can end in several ways:
-    -   When a task named "end" is executed.
-    -   When a task completes, and no matching `condition` is found for its outcome (success or failure).
-    -   When the `FlowProcessor` explicitly calls `__end_flow()`.
-    Upon termination, the `FlowExecutionResult` is populated with the flow's status and a history of executed tasks.
+-   **Success**: If a task succeeds, the flow proceeds to the `target_task_success` defined in a matching condition.
+-   **Failure**: If a task fails, the flow proceeds to the `target_task_failure` defined in a matching condition.
+-   **Flow Termination**: A flow ends when:
+    *   An "end" task is reached.
+    *   A task completes, and no matching condition is found for its outcome.
+    *   The flow is explicitly terminated.
+    The final result includes the flow's status and a history of executed tasks.
 
 ## Code Implementation
 
-The flow manager is implemented using Python with FastAPI for the API.
+The flow manager is built with Python and FastAPI.
 
-### Core Components:
+### Key Components:
+-   **`app/models/flow.py`**: Defines data structures for tasks, conditions, and flows.
+-   **`app/services/task.py`**: Handles individual task execution (`Process`) and scheduling (`Scheduler`).
+-   **`app/services/flow.py`**: Orchestrates the overall flow execution (`FlowProcessor`), managing task transitions based on conditions.
+-   **`app/main.py`**: The FastAPI application, responsible for loading flows from JSON files (in the `flows/` directory) and exposing API endpoints for creating, reading, and executing flows.
 
--   **`app/models/flow.py`**: Defines Pydantic models for `Task`, `Condition`, `Flow`, `FlowData`, and `FlowExecutionResult`, structuring the workflow definitions.
--   **`app/services/task.py`**:
-    -   `Process`: Encapsulates the logic for executing a single task.
-    -   `Scheduler`: Manages the asynchronous execution of tasks and handles callbacks for success, failure, and flow completion.
--   **`app/services/flow.py`**:
-    -   `FlowProcessor`: Orchestrates the execution of a `Flow` by managing task scheduling, condition evaluation, and state transitions. It uses the `Scheduler` and `Process` classes.
--   **`app/main.py`**:
-    -   The FastAPI application setup.
-    -   Loads flow definitions from JSON files in the `flows/` directory on startup.
-    -   Provides API endpoints for creating (`/flows/`), retrieving (`/flows/`, `/flows/{flow_id}`), and executing (`/flows/{flow_id}/execute`) flows.
-
-### Example Task Definition (JSON):
+### Example Flow Definition (JSON):
 
 Flows are defined in JSON files within the `flows/` directory.
 
